@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, master]
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run CI script on Unix
+        if: runner.os != 'Windows'
+        run: ./ci.sh
+        shell: bash
+
+      - name: Run CI script on Windows
+        if: runner.os == 'Windows'
+        run: ci.bat
+        shell: cmd
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-${{ matrix.os }}
+          path: dist/
+          if-no-files-found: error
