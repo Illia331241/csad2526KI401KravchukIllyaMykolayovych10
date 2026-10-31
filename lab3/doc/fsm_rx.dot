@@ -1,0 +1,19 @@
+digraph uart_rx {
+  rankdir=LR; bgcolor=white; pad=0.3; nodesep=0.8; ranksep=1.0;
+  node [shape=hexagon, style=filled, fontname="DejaVu Sans", fontsize=11, width=1.9, height=0.9, fillcolor="#e0f2f1", color="#00695c", penwidth=1.7];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#c62828", fontcolor="#7f0000"];
+  label="Приймач uart_rx: автомат станів (Verilog, state[1:0])"; labelloc=t; fontname="DejaVu Sans"; fontsize=13;
+  IDLE  [label="S_IDLE (00)", fillcolor="#b2dfdb", penwidth=2.6];
+  START [label="S_START (01)"];
+  DATA  [label="S_DATA (10)"];
+  STOP  [label="S_STOP (11)"];
+  IDLE -> IDLE [label="немає спаду"];
+  IDLE -> START [label="rx_prev && !rx_sync"];
+  START -> START [label="tick_cnt < 7"];
+  START -> IDLE [label="tick_cnt == 7 && rx_sync\n(завада)", constraint=false];
+  START -> DATA [label="tick_cnt == 7 && !rx_sync"];
+  DATA -> DATA [label="tick_cnt == 15:\nshreg <= {rx_sync, shreg[7:1]}"];
+  DATA -> STOP [label="bit_idx == 7"];
+  STOP -> STOP [label="tick_cnt < 15"];
+  STOP -> IDLE [label="tick_cnt == 15:\nrx_valid / rx_frame_err", constraint=false];
+}
