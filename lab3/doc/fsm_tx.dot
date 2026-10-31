@@ -1,0 +1,18 @@
+digraph uart_tx {
+  rankdir=LR; bgcolor=white; pad=0.3; nodesep=0.8; ranksep=1.0;
+  node [shape=hexagon, style=filled, fontname="DejaVu Sans", fontsize=11, width=1.9, height=0.9, fillcolor="#e3f2fd", color="#1565c0", penwidth=1.7];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#c62828", fontcolor="#7f0000"];
+  label="Передавач uart_tx: автомат станів (Verilog, state[1:0])"; labelloc=t; fontname="DejaVu Sans"; fontsize=13;
+  IDLE  [label="S_IDLE (00)\ntx_reg = 1", fillcolor="#bbdefb", penwidth=2.6];
+  START [label="S_START (01)\ntx_reg = 0"];
+  DATA  [label="S_DATA (10)\ntx_reg = shreg[0]"];
+  STOP  [label="S_STOP (11)\ntx_reg = 1"];
+  IDLE -> IDLE [label="tx_start = 0"];
+  IDLE -> START [label="tx_start = 1:\nshreg <= tx_data"];
+  START -> START [label="os_tick, tick_cnt < 15"];
+  START -> DATA [label="tick_cnt == 15"];
+  DATA -> DATA [label="tick_cnt == 15, bit_idx < 7:\nshreg <= {1'b0, shreg[7:1]}"];
+  DATA -> STOP [label="bit_idx == 7"];
+  STOP -> STOP [label="tick_cnt < 15"];
+  STOP -> IDLE [label="tick_cnt == 15: tx_done <= 1", constraint=false];
+}
