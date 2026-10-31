@@ -1,0 +1,21 @@
+# GHDL / Icarus Verilog
+*.cf
+*.o
+*.vvp
+*.vcd
+# ModelSim / Questa
+work/
+transcript
+*.wlf
+# Vivado
+.Xil/
+*.jou
+*.cache/
+*.runs/
+*.sim/
+*.hw/
+*.ip_user_files/
+# Quartus
+db/
+incremental_db/
+output_files/
